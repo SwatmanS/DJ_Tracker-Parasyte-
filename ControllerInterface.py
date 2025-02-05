@@ -2,8 +2,6 @@ import pygame as pg
 import random
 import math
 
-
-
 def spin(ang,p,q):
     a = ((p*(math.cos(math.radians(ang))))-(q*(math.sin(math.radians(ang)))))
     b = ((q*(math.cos(math.radians(ang))))+(p*(math.sin(math.radians(ang)))))

@@ -28,9 +28,9 @@ pPotsBuffer = []
 
 class NI_Controller:
     #   Native Instruments Kontrol s2mk2
-    def __init__(self,Button,Knob):
-        self.ButtonBuffer = [x]
-        self.KnobBuffer = [y]
+    def __init__(self,bBuffer,kBuffer):
+        self.ButtonBuffer = [bBuffer]
+        self.KnobBuffer = [kBuffer]
 
     def getKnobBuffer(self):
         return self.KnobBuffer
