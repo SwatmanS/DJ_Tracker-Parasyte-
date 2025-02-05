@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+
 # -*- coding: utf-8 -*-
 #
 #
@@ -14,12 +15,13 @@ import tkinter as tk
 import time
 import csv
 import ControllerInterface as CuI
+import NITKS2MK2 as Kon
 from ControllerInterface import *
 import pygame as pg
 
 start_time = time.time()
 
-    
+inputRecordingPath = "./Input_Recordings/"
 pdata = 0
 pButsBuffer = []
 pPotsBuffer = []
@@ -34,7 +36,6 @@ class NI_Controller:
         return self.KnobBuffer
     def getButtonBuffer(self):
         return self.ButtonBuffer
-
 
 def sample_handler(data):
     #print([time.time()-start_time]+[data])
@@ -115,7 +116,7 @@ def process_sample(data):
             pPotsBuffer = data
 
 
-def samples_from_file(filename = "DefaultParasyteSessionFile.csv"):
+def samples_from_file(filename = inputRecordingPath+"DefaultParasyteSessionFile.csv"):
     with open(filename, "r") as f:
         reader = csv.reader(f)
         lines = [i for i in reader]
@@ -124,13 +125,13 @@ def samples_from_file(filename = "DefaultParasyteSessionFile.csv"):
     return time , data
      
    
-def sample_to_file(data,filename = "DefaultParasyteSessionFile.csv"):
+def sample_to_file(data,filename = inputRecordingPath + "DefaultParasyteSessionFile.csv"):
     global start_time
     with open(filename,"a",newline = '') as f:
         writer = csv.writer(f)
         writer.writerow([time.time()- start_time]+data)
 
-def samples_to_file(data,filename = "DefaultParasyteSessionFile.csv"):
+def samples_to_file(data,filename = inputRecordingPath + "DefaultParasyteSessionFile.csv"):
     global start_time
     with open(filename,"a",newline = '') as f:
         writer = csv.writer(f)
@@ -212,7 +213,7 @@ if __name__ == '__main__':
     if mode == "1":
         hid_device_connection()
     elif mode == "2":
-        times,data = samples_from_file("DeckATransport.csv")
+        times,data = samples_from_file(inputRecordingPath + "DeckATransport.csv")
         local_start_time = time.time()
         
         for i,sample in enumerate(data):
@@ -223,11 +224,7 @@ if __name__ == '__main__':
             
             print(str(times[i])[:5],end="\t")
             process_sample(sample)
-            
-            
-            
-            
-            
+                 
     elif mode == "3":
         quit()
 
