@@ -26,6 +26,9 @@ pdata = 0
 pButsBuffer = []
 pPotsBuffer = []
 
+def boolFromBit(byte,index):
+    return (byte>>index)&1
+
 class NI_Controller:
     #   Native Instruments Kontrol s2mk2
     def __init__(self,bBuffer,kBuffer):
@@ -54,11 +57,8 @@ def process_sample(data):
         pPotsBuffer = data
         pdata = 1
     else:
-        ##print(f"New Button Chunk - Len: {len(data)}")
-        ##print(data)
-        if data[0] == 1: # Button Buffer
-            ##SHIFT SYNC CUE PLAY                
-            ##print(f"{(data[11]>>3)&1}{(data[11]>>2)&1}{(data[11]>>1)&1}{data[11]&1}")    
+
+        if data[0] == 1: # Button Buffer  
             for i in range(len(data)):
                 if pButsBuffer[i] != data[i]:
 
@@ -102,8 +102,7 @@ def process_sample(data):
 
 
 
-        elif data[0] == 2: # Pots Buffer
-            ##print(f"New Potentiometer Chunk - Len: {len(data)}")     
+        elif data[0] == 2: # Knob Buffer  
             for i in range(len(data)):
                 if pPotsBuffer[i] != data[i]:
                     if i == 7 or i == 8:
@@ -164,7 +163,7 @@ def hid_device_connection():
             
             if index_option.isdigit() and int(index_option) <= len(all_hids):
                 # invalid
-                break;
+                break
             
         int_option = int(index_option)
         if int_option:
