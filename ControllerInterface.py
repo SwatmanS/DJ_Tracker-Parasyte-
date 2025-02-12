@@ -15,15 +15,14 @@ def three(rot,pot):
     x,z= spin(yaw,x,z)
     return x,y,z
 
-def renderText(screen,text,position = [0,0],colour = [0,0,0],size = 10):
+def renderText(screen,text='text',position = [0,0],colour = [0,0,0],size = 10):
     fontObj = pg.font.Font("MonospaceTypewriter.ttf",size)
     textSufaceObj = fontObj.render(text, True, colour)
     textRectObj = textSufaceObj.get_rect()
     textRectObj.midtop = (position)
     screen.blit(textSufaceObj, textRectObj,)
-    pass
 
-def drawBtn(screen, pos = [0,0], pressed = False, label = "",size = 10,textSize = 10):
+def drawBtn(screen, pos = [0,0], pressed = False, label = "",size = 10,textSize = 10,colour = [255,255,255]):
     
     points = [[-size + pos[0],size+ pos[1]],[size+ pos[0],size+ pos[1]],[size+ pos[0],-size + pos[1]],[-size + pos[0],-size + pos[1]]]
     
@@ -32,9 +31,9 @@ def drawBtn(screen, pos = [0,0], pressed = False, label = "",size = 10,textSize 
                     points,
                     width = not(pressed))
     tPos = [pos[0],pos[1]+size]
-    renderText(screen,"Test",tPos,[255,255,255],textSize)
+    renderText(screen,label,tPos,[255,255,255],textSize)
     
-def drawJog(screen, pos = [0,0], deg = 0,size = 50,down = 0):
+def drawJog(screen, pos = [0,0], deg = 0,size = 50,pressed = 0):
     ex = size
     ey = size
     
@@ -94,6 +93,7 @@ if __name__ == "__main__":
     pg.display.set_caption("Controler Display")
     done = False
     clock = pg.time.Clock()
+    white = [255,255,255]
     sp = 0
     while not done:
         screen.fill([0,0,0])
@@ -112,7 +112,12 @@ if __name__ == "__main__":
         ##  A_JogWheel
         drawJog(screen,[150,450],sp,70,(sp%60) > 30)
 
-        drawBtn(screen,[450,450], sp > 30,"TestButton",sp,sp)
+        drawBtn(screen=screen,
+                pos=[450,450],
+                label="Test",
+                size=50,textSize=30,
+                pressed = (sp%30)>15,
+                colour=white)
         
         #renderText(screen,f"H = {screen.get_height()} , W = {screen.get_width()}",[700,100],[255,255,255],size=20)
         renderText(screen,f"mouse_pos = ({pg.mouse.get_pos()})",[pg.mouse.get_pos()[0]+80,pg.mouse.get_pos()[1]+30],[255,255,255],size=10)
