@@ -15,14 +15,24 @@ def three(rot,pot):
     x,z= spin(yaw,x,z)
     return x,y,z
 
-def drawBtn(screen, pos = [0,0], pressed = False, label = ""):
+def renderText(screen,text,position = [0,0],colour = [0,0,0],size = 10):
+    fontObj = pg.font.Font("MonospaceTypewriter.ttf",size)
+    textSufaceObj = fontObj.render(text, True, colour)
+    textRectObj = textSufaceObj.get_rect()
+    textRectObj.midtop = (position)
+    screen.blit(textSufaceObj, textRectObj,)
+    pass
+
+def drawBtn(screen, pos = [0,0], pressed = False, label = "",size = 10,textSize = 10):
     
-    points = [[-10 + pos[0],10+ pos[1]],[10+ pos[0],10+ pos[1]],[10+ pos[0],-10 + pos[1]],[-10 + pos[0],-10 + pos[1]]]
+    points = [[-size + pos[0],size+ pos[1]],[size+ pos[0],size+ pos[1]],[size+ pos[0],-size + pos[1]],[-size + pos[0],-size + pos[1]]]
     
     pg.draw.polygon(screen,
                     [255,255,255],
                     points,
                     width = not(pressed))
+    tPos = [pos[0],pos[1]+size]
+    renderText(screen,"Test",tPos,[255,255,255],textSize)
     
 def drawJog(screen, pos = [0,0], deg = 0,size = 50,down = 0):
     ex = size
@@ -78,119 +88,34 @@ if __name__ == "__main__":
     
     pg.init()
     fps = 60
-    size = width, height = 500,500
-    screen = pg.display.set_mode(size)
+    size = width, height = 900,1600
+    screen = pg.display.set_mode((0,0),pg.FULLSCREEN)
     screenRect = screen.get_rect()
     pg.display.set_caption("Controler Display")
     done = False
     clock = pg.time.Clock()
     sp = 0
-
     while not done:
         screen.fill([0,0,0])
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 done = True
-              
+            elif event.type == pg.KEYDOWN:
+                if event.key == pg.K_ESCAPE:
+                    done = True
+        ##  Lines For Testing
+        pg.draw.line(screen,255,[900,0],[900,900])
+        pg.draw.line(screen,255,[0,450],[900,450])
+        pg.draw.line(screen,255,[450,0],[450,900])
+        
         ##  Draw Deck A
         ##  A_JogWheel
-        drawJog(screen,[120,200],sp)
-        ##  A_VolumeFader
-        drawFad(screen,[200,330],(sp%80),80)
-        
-        ##  Deck A Transport
-        ##  A_PlayButton
-        drawBtn(screen,[150,350], sp > 30)
-        ##  A_CueButton
-        drawBtn(screen,[125,350], sp > 120)
-        ##  A_SyncButton
-        drawBtn(screen,[100,350],sp > 210)
-        ##  A_ShiftButton
-        drawBtn(screen,[75,350],sp > 300)
-        
-        ##  Deck A HotCues
-        ##  A_HotCue1
-        drawBtn(screen,[150,325], sp > 40)
-        ##  A_HotCue2
-        drawBtn(screen,[125,325], sp > 130)
-        ##  A_HotCue3
-        drawBtn(screen,[100,325],sp > 220)
-        ##  A_HotCue4
-        drawBtn(screen,[75,325],sp > 310)
-        
-        ##  Deck A Loop Section
-        ##  A_LoopLENC
-        drawEnc(screen,[75,300],sp)
-        ##  A_LoopIN
-        drawBtn(screen,[100,300],sp > 230)
-        ##  A_LoopOUT
-        drawBtn(screen,[125,300], sp > 140)
-        ##  A_LoopRENC
-        drawEnc(screen,[150,300],sp)
+        drawJog(screen,[150,450],sp,70,(sp%60) > 30)
 
-        ##  Deck A Tempo Section
-        ##  A_TempoFader
-        drawFad(screen,[40,330],(sp%80),80)
-        ##  A_FluxButton
-        drawBtn(screen,[40,275], sp > 140)
-
-        ##  Deck A FX Section
-        ##  A_DryWetKnob
-        drawKnb(screen,[25,50],sp)
-        drawBtn(screen,[50,75], sp > 140)
-        ##  A_FX1Knob
-        drawKnb(screen,[75,50],sp)
-        drawBtn(screen,[100,75], sp > 140)
-        ##  A_FX2Knob
-        drawKnb(screen,[125,50],sp)
-        drawBtn(screen,[150,75], sp > 140)
-        ##  A_FX3Knob
-        drawKnb(screen,[175,50],sp)
-        drawBtn(screen,[200,75], sp > 140)
+        drawBtn(screen,[450,450], sp > 30,"TestButton",sp,sp)
         
-        ##  Draw Deck B
-        ##  B_JogWheel
-        drawJog(screen,[350,150],390 - sp)
-        ##  B_VolumeFader
-        drawFad(screen,[300,300],(sp%80),80)
-        ##  Deck B Transport
-        ##  B_PlayButton
-        drawBtn(screen,[350,350], sp > 30)
-        ##  B_CueButton
-        drawBtn(screen,[375,350], sp > 120)
-        ##  B_SyncButton
-        drawBtn(screen,[400,350],sp > 210)
-        ##  B_ShiftButton
-        drawBtn(screen,[425,350],sp > 300)
-        ##  Deck B HotCue
-        ##  B_HotCue1
-        drawBtn(screen,[350,325], sp > 40)
-        ##  B_HotCue2
-        drawBtn(screen,[375,325], sp > 130)
-        ##  B_HotCue3
-        drawBtn(screen,[400,325],sp > 220)
-        ##  B_HotCue4
-        drawBtn(screen,[425,325],sp > 310)
-
-        ##  Deck B Loop Section
-        ##  B_LoopLENC
-        drawEnc(screen,[350,300],sp)
-        ##  B_LoopIN
-        drawBtn(screen,[375,300],sp > 140) 
-        ##  B_LoopOUT
-        drawBtn(screen,[400,300], sp > 230)   
-        ##  B_LoopRENC
-        drawEnc(screen,[425,300],sp)
-
-        ##  B_TempoFader
-        drawFad(screen,[460,330],(sp%80),80)
-        
-
-        
-        #drawEnc(screen,[350,250],sp)
-        
-        #drawKnb(screen,[350,350],sp)
-        
+        #renderText(screen,f"H = {screen.get_height()} , W = {screen.get_width()}",[700,100],[255,255,255],size=20)
+        renderText(screen,f"mouse_pos = ({pg.mouse.get_pos()})",[pg.mouse.get_pos()[0]+80,pg.mouse.get_pos()[1]+30],[255,255,255],size=10)
         sp = (sp + 1) % 360
         pg.display.flip()
         clock.tick(60)
