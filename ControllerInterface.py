@@ -141,20 +141,13 @@ def drawHFad(screen, pos = [0,0], percentage = 0,size = [10,40],label='',textSiz
                     width = 0) 
     tPos = [pos[0]+(width//2),pos[1]+(height + int(height/25))]
     renderText(screen,label,tPos,[255,255,255],textSize)
-    
-if __name__ == "__main__":
-    
-    pg.init()
-    fps = 60
-    size = width, height = 900,1600
-    screen = pg.display.set_mode((0,0),pg.FULLSCREEN)
-    screenRect = screen.get_rect()
-    pg.display.set_caption("Controler Display")
+
+def testGraphics(screen,clock):
     done = False
-    clock = pg.time.Clock()
-    white = [255,255,255]
     sp = 0
     down = False
+    pg.display.set_caption("Input Graphics Test")    
+    white = [255,255,255]
     while not done:
         screen.fill([0,0,0])
         for event in pg.event.get():
@@ -228,3 +221,15 @@ if __name__ == "__main__":
         pg.display.flip()
         clock.tick(60)
     pg.quit()
+    
+if __name__ == "__main__":
+    
+    pg.init()
+    fps = 60
+    size = width, height = 900,1600
+    screen = pg.display.set_mode((0,0),pg.FULLSCREEN)
+    screenRect = screen.get_rect()
+    pg.display.set_caption("Controler Display")
+    clock = pg.time.Clock()
+    white = [255,255,255]
+    testGraphics(screen,clock)
