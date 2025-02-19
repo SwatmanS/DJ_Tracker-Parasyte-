@@ -116,7 +116,7 @@ def drawVFad(screen, pos = [0,0], percentage = 0,size = [10,40],label='',textSiz
 
 def drawHFad(screen, pos = [0,0], percentage = 0,size = [10,40],label='',textSize=50):
 
-    height = size[1]
+    height = size[1]     
     width = size[0]
 
     points = [[pos[0],pos[1]],
@@ -189,7 +189,7 @@ def testGraphics(screen,clock):
                 pos=[450,150],
                 deg=sp,
                 size=70,
-                label="Massive Knob",
+                label="test Knob",
                 textSize=30)
         
         drawCBtn(screen=screen,
