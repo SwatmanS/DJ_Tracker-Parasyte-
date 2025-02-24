@@ -14,7 +14,7 @@ import pywinusb.hid as hid
 import tkinter as tk
 import time
 import csv
-import ControllerInterface as CuI
+from ControllerInterface import ControllerInterface
 import NITKS2MK2 as Kon
 from ControllerInterface import *
 import pygame as pg
@@ -29,16 +29,6 @@ pPotsBuffer = []
 def boolFromBit(byte,index):
     return (byte>>index)&1
 
-class NI_Controller:
-    #   Native Instruments Kontrol s2mk2
-    def __init__(self,bBuffer,kBuffer):
-        self.ButtonBuffer = [bBuffer]
-        self.KnobBuffer = [kBuffer]
-
-    def getKnobBuffer(self):
-        return self.KnobBuffer
-    def getButtonBuffer(self):
-        return self.ButtonBuffer
 
 def sample_handler(data):
     #print([time.time()-start_time]+[data])
@@ -205,6 +195,7 @@ if __name__ == '__main__':
         # allow to show encoded strings
         import codecs
         sys.stdout = codecs.getwriter('mbcs')(sys.stdout)
+    
     print("DJ_Parasyte Version: Pre-Alpha")
     print("Author: Sam Swatman")
 
@@ -216,11 +207,6 @@ if __name__ == '__main__':
         local_start_time = time.time()
         
         for i,sample in enumerate(data):
-            while float(times[i]) > float(time.time()-local_start_time):
-                ##print(time.time()-local_start_time)
-                # print(str(time.time()-local_start_time)[:5],end="\n")
-                pass
-            
             print(str(times[i])[:5],end="\t")
             process_sample(sample)
                  

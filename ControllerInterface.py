@@ -221,6 +221,25 @@ def testGraphics(screen,clock):
         pg.display.flip()
         clock.tick(60)
     pg.quit()
+
+def interfaceSetup():
+    pg.init()
+    fps = 60
+    size = width, height = 900,1600
+    screen = pg.display.set_mode((0,0),pg.FULLSCREEN)
+    screenRect = screen.get_rect()
+    pg.display.set_caption("Controler Display")
+    clock = pg.time.Clock()
+
+class ControllerInterface:
+    def __init__(self):
+        pg.init()
+        self.fps = 60
+        self.size = self.width, self.height = 900,1600
+        self.screen = pg.display.set_mode((0,0),pg.FULLSCREEN)
+        self.screenRect = self.screen.get_rect()
+        pg.display.set_caption("Controler Display")
+        self.clock = pg.time.Clock()
     
 if __name__ == "__main__":
     
