@@ -8,14 +8,14 @@ class Button:
         return name
     def getName(self):
         return self.name
-    def setState(self,state):
+    def setPressed(self,state):
         self.pressed = state
         return self.pressed
-    def getState(self):
+    def getPressed(self):
         return self.pressed
     
 class Knob:
-    def __init__(self,name = 'untitled Knob',High = 100,Low = 0, value = 0):
+    def __init__(self,name = 'untitled Knob',High = 4096,Low = 0, value = 0):
         self.name = name
         self.high = High
         self.low = Low
@@ -38,7 +38,7 @@ class Knob:
         return [self.Low,self.High]
 
 class Encoder:
-    def __init__(self,name = 'untitled Encoder',High = 100,Low = 0, value = 0,pressed=False):
+    def __init__(self,name = 'untitled Encoder',High = 4096,Low = 0, value = 0,pressed=False):
         self.name = name
         self.high = High
         self.low = Low
@@ -60,19 +60,19 @@ class Encoder:
         return [self.Low,self.High]
     def getBounds(self):
         return [self.Low,self.High]
-    def setState(self,state):
+    def setPressed(self,state):
         self.pressed = state
         return self.pressed
-    def getState(self):
+    def getPressed(self):
         return self.pressed
 
 class Jog:
-    def __init__(self,name = 'untitled Encoder',High = 100,Low = 0, value = 0,pressed=False):
+    def __init__(self,name = 'untitled Encoder',High = 360,Low = 0, value = 0,pressed=False):
         self.name = name
         self.high = High
         self.low = Low
         self.value = value
-        self.pressed = False
+        self.pressed = pressed
     def setName(self,name):
         self.name = name
         return name
@@ -89,14 +89,14 @@ class Jog:
         return [self.Low,self.High]
     def getBounds(self):
         return [self.Low,self.High]
-    def setState(self,state):
+    def setPressed(self,state):
         self.pressed = state
         return self.pressed
-    def getState(self):
+    def getPressed(self):
         return self.pressed
 
 class Slider:
-    def __init__(self,name = 'untitled Slider',High = 100,Low = 0, value = 0):
+    def __init__(self,name = 'untitled Slider',High = 4096 ,Low = 0, value = 0):
         self.name = name
         self.high = High
         self.low = Low
@@ -119,7 +119,7 @@ class Slider:
         return [self.Low,self.High]
     
 class encoderBounds:
-    def __init__(self,High,Low,Value):
+    def __init__(self,High = 4096,Low = 0,Value = 0):
         self.hi = High
         self.lo = Low
         self.val = Value
@@ -142,18 +142,18 @@ class Transport:
     
 
 class Tempo:
-    def __init__(self,name,s_high,s_low,s_value):
+    def __init__(self,name,s_high = 4096,s_low = 0,s_value = 0):
         self.name = name
         self.Flux = Button("Flux")
         self.Tempo_Slider = Slider("Tempo Slider",s_low,s_high,s_value)
 
 class Jogs:
-    def __init__(self,name,s_high,s_low,s_value):
+    def __init__(self,name,s_high = 360,s_low = 0,s_value = 0):
         self.name = name
-        self.Left = Jog("Jog Button",s_high,s_low,s_value)
+        self.Jog = Jog("Jog Button",s_high,s_low,s_value)
 
 class Loops:
-    def __init__(self,name,l_high,l_low,l_value,r_high,r_low,r_value):
+    def __init__(self,name,l_high = 4096,l_low = 0,l_value = 0,r_high = 4096,r_low = 0,r_value = 0):
         self.name = name
         self.In = Button("In")
         self.Out = Button("Out")
@@ -161,7 +161,7 @@ class Loops:
         self.Right_Encoder = Encoder("Right Encoder",r_high,r_low,r_value)
 
 class Deck:
-    def __init__(self,name,l_high,l_low,l_value,r_high,r_low,r_value,s_high,s_low,s_value,j_high,j_low,j_value):
+    def __init__(self,name,l_high = 4096,l_low = 0,l_value = 0,r_high = 4096,r_low = 0,r_value = 0,s_high = 4096,s_low = 0,s_value = 0,j_high = 4096,j_low = 0,j_value = 0):
         self.name = name
         self.LoopSection = Loops("LoopSection",l_high,l_low,l_value,r_high,r_low,r_value)
         self.JogSection = Jogs("JogSection",j_high,j_low,j_value)
@@ -170,7 +170,7 @@ class Deck:
         self.HotCueSection = Hotcue("HotCueSection")
 
 class Faders:
-    def __init__(self,name,a_Bounds,b_Bounds,c_Bounds):
+    def __init__(self,name,a_Bounds:encoderBounds,b_Bounds:encoderBounds,c_Bounds:encoderBounds):
         self.name = name
         self.CueA = Button("CueA")
         self.CueB = Button("CueB")
@@ -195,7 +195,7 @@ class EQ:
         self.EQ_LO = Knob("EQ_Lows",lo_Bounds.hi,lo_Bounds.lo,lo_Bounds.val)
 
 class EQBoundStruct:
-    def __init__(self,hi_Bounds,mid_Bounds,lo_Bounds,enc_Bounds):
+    def __init__(self,hi_Bounds:encoderBounds,mid_Bounds:encoderBounds,lo_Bounds:encoderBounds,enc_Bounds:encoderBounds):
         self.hi_Bounds = hi_Bounds
         self.mid_Bounds = mid_Bounds
         self.lo_Bounds = lo_Bounds
@@ -221,13 +221,13 @@ class Master:
 class Mixer:
     def __init__(self,name,f:FaderBoundStruct,e1:EQBoundStruct,e2:EQBoundStruct,m:MasterBoundStruct):
         self.name = name
-        self.MasterSection = Master("MasterSection",m.m_Bounds,m.b_Bounds,m.rBounds)
+        self.MasterSection = Master("MasterSection",m.m_Bounds,m.b_Bounds,m.r_Bounds)
         self.EQ_A_Section = EQ("EQ_A_Section",e1.hi_Bounds,e1.mid_Bounds,e1.lo_Bounds,e1.enc_Bounds)
         self.EQ_B_Section = EQ("EQ_B_Section",e2.hi_Bounds,e2.mid_Bounds,e2.lo_Bounds,e2.enc_Bounds)
         self.FaderSection = Faders("FadersSection",f.a,f.b,f.c)
 
 class FXBoundsStruct:
-    def __init__(self,dw_Bound,FX1_Bound,FX2_Bound,FX3_Bound):
+    def __init__(self,dw_Bound=encoderBounds(),FX1_Bound=encoderBounds(),FX2_Bound=encoderBounds(),FX3_Bound=encoderBounds()):
         self.dw = dw_Bound
         self.fx1 = FX1_Bound
         self.fx2 = FX2_Bound
@@ -254,10 +254,19 @@ class FX:
         self.FX_Line_1 = FX_Line("FX_Line_1",FX1_Bounds)
         self.FX_Line_2 = FX_Line("FX_Line_2",FX2_Bounds)
 
+class DeckBuffer:
+    def __init__(self,):
+        pass
+
 class TKS2MK2:
     def __init__(self,name):
         self.name = name
         self.Deck_A = Deck("Deck_A")
         self.Deck_B = Deck("Deck_B")
-        self.Mixer = Mixer("Mixer")
-        self.FX = FX("FX")
+        self.Mixer = Mixer("Mixer",
+                           FaderBoundStruct(encoderBounds(),encoderBounds(),encoderBounds()),
+                           EQBoundStruct(encoderBounds(),encoderBounds(),encoderBounds(),encoderBounds()),
+                           EQBoundStruct(encoderBounds(),encoderBounds(),encoderBounds(),encoderBounds()),
+                           MasterBoundStruct(encoderBounds(),encoderBounds(),encoderBounds()))
+        self.FX = FX("FX",FXBoundsStruct(),FXBoundsStruct())
+        self.Time = 0

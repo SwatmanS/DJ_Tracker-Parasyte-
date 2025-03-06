@@ -232,13 +232,13 @@ def interfaceSetup():
     clock = pg.time.Clock()
 
 class ControllerInterface:
-    def __init__(self):
+    def __init__(self,Title="Controler Display" ):
         pg.init()
         self.fps = 60
         self.size = self.width, self.height = 900,1600
         self.screen = pg.display.set_mode((0,0),pg.FULLSCREEN)
         self.screenRect = self.screen.get_rect()
-        pg.display.set_caption("Controler Display")
+        pg.display.set_caption(Title)
         self.clock = pg.time.Clock()
     
 if __name__ == "__main__":

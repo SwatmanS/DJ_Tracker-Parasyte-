@@ -1,0 +1,52 @@
+0   Buffer Select
+1   Deck A 0-15 = Left Loop Encoder, Deck A 16-255 = Right Loop Encoder  
+2   Mixer 0-15 = Browse Pot, Deck B 16-255 = Left Loop Encoder
+3   Deck B 0-15 = Right Loop Encoder, Mixer 16-255 = Gain A
+4   Mixer 0-15 = Gain B
+5   Crossfader 12 bit
+6   1-15 = Crossfader
+7   Tempo A 12 bit
+8   Tempo A
+9   Tempo B 12 bit
+10  Tempo B
+11  CueMix 12 bit
+12  
+13  Remix Knob 12 bit
+14  0-15 = Remix Knob
+15  Main Level 12 bit
+16  0=15 = Main Level
+17  Booth Level 12 bit
+18  0-15 = Booth Level
+19  Deck A Mix 12 bit
+20  0-15 Deck A Mix
+21  Deck B Mix 12 bit
+22  0-15 Deck B Mix
+23  FX1DW 12 bit
+24  0-15 FX1DW
+25  FX11 12 bit
+26  0-15 FX11
+27  FX12 12 bit
+28  0-15 FX12
+29  FX13 12 bit
+30  0-15 FX13
+31  FX2DW 12 bit
+32  ''
+33  FX21 12 bit
+34  ''
+35  FX22 12 bit
+36  ''
+37  FX2312 bit
+38  ''
+39  A High 12 bit
+40  
+41  A Mid 12 bit
+42  
+43  A Low 12 bit
+44  
+45  B High 12 bit
+46  
+47  B Mid 12 bit
+48  
+49  B Low 12 bit
+50  
+51  

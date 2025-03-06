@@ -29,7 +29,17 @@ pPotsBuffer = []
 def boolFromBit(byte,index):
     return (byte>>index)&1
 
+def Decode16BitEncoder(data,index):
+    x = (data[index+1]*256)+data[index]
+    return x 
 
+
+def Decode4BitEncoder(data,index,high=False):
+    if high:
+        x = (data[index] - (data[index]%16))//16
+    else:
+        x = data[index]%16
+    return x 
 def sample_handler(data):
     #print([time.time()-start_time]+[data])
     process_sample(data)
@@ -96,11 +106,22 @@ def process_sample(data):
             for i in range(len(data)):
                 if pPotsBuffer[i] != data[i]:
                     if i == 7 or i == 8:
-                        pass
-                        print(f"Deck_A Tempo {(data[8]*256)+data[7]}")
+                        
+                        print(f"Deck_A Tempo {Decode16BitEncoder(data,7)}")
+                    if i == 9 or i == 10:
+                        
+                        print(f"Deck_B Tempo {Decode16BitEncoder(data,9)}")
                     if i == 19 or i == 20:
-                        pass
-                        print(f"Deck_A MixSlider {(data[20]*256)+data[19]}")
+                        
+                        print(f"Deck_A MixSlider {Decode16BitEncoder(data,19)}")
+                    if i == 21 or i == 22:
+                        
+                        print(f"Deck_B MixSlider {Decode16BitEncoder(data,19)}")
+                    if i == 1:
+                        if abs(data[i]-pPotsBuffer[i])== 1 or abs(data[i]-pPotsBuffer[i])== 15:
+                            print(f"L Loop Enc {Decode4BitEncoder(data,1)}")
+                        else:
+                            print(f"R Loop Enc {Decode4BitEncoder(data,1,True)}")
                     #print(f"    Change in byte\t{i}\tfrom\t{pPotsBuffer[i]}\tto\t{data[i]}\tof\t{data[i]-pPotsBuffer[i]}")
             pPotsBuffer = data
 
@@ -177,6 +198,126 @@ def hid_device_connection():
                             break
                         
                     sleep(0.5)
+                return
+            finally:
+                device.close()
+    else:
+        print("There's not any non system HID class device available")
+
+def gui_hid_device_connection():
+    # simple test
+    # browse devices...
+    
+    all_hids = hid.find_all_hid_devices()
+    if all_hids:
+        while True:
+            
+            print("Choose a device to monitor raw input reports:\n")
+            print("0 => Exit")
+            
+            for index, device in enumerate(all_hids):
+                device_name = unicode("{0.vendor_name} {0.product_name}" \
+                        "(vID=0x{1:04x}, pID=0x{2:04x})"\
+                        "".format(device, device.vendor_id, device.product_id))
+                
+                print("{0} => {1}".format(index+1, device_name))
+                
+            print("\n\tDevice ('0' to '%d', '0' to exit?) " \
+                    "[press enter after number]:" % len(all_hids))
+            
+            index_option = raw_input()
+            
+            if index_option.isdigit() and int(index_option) <= len(all_hids):
+                # invalid
+                break
+            
+        int_option = int(index_option)
+        if int_option:
+            device = all_hids[int_option-1]
+            try:
+                device.open()
+
+                #set custom raw data handler
+
+                device.set_raw_data_handler(sample_handler)
+
+                print("\nWaiting for data...\nPress ESC key to stop...")
+                key_stroke = 0
+                ui = ControllerInterface()
+                screen = ui.screen
+                while device.is_plugged():
+                    #just keep the device opened to receive events
+                    screen.fill([0,0,0])
+                    for event in pg.event.get():
+                        if event.type == pg.QUIT:
+                            done = True
+                        elif event.type == pg.KEYDOWN:
+                            if event.key == pg.K_ESCAPE:
+                                done = True
+                            elif event.key == pg.K_SPACE:
+                                down = True
+                        elif event.type == pg.KEYUP:
+                            if event.key == pg.K_SPACE:
+                                down = False
+                    ##  Lines For Testing
+                    pg.draw.line(screen,255,[900,0],[900,900])
+                    pg.draw.line(screen,255,[0,450],[900,450])
+                    pg.draw.line(screen,255,[450,0],[450,900])
+                    
+
+                    ##  Draw Deck A
+                    ##  A_JogWheel
+                    drawJog(screen=screen,
+                            pos=[150,450],
+                            deg=sp,
+                            size=70,
+                            pressed= down,#(sp%60) > 30,
+                            label="Test Jog",
+                            textSize=30)
+
+                    drawEnc(screen=screen,
+                            pos=[150,150],
+                            deg=sp,
+                            size=70,
+                            pressed=down,
+                            label="Test Encoder",
+                            textSize=30)
+
+                    drawKnb(screen=screen,
+                            pos=[450,150],
+                            deg=sp,
+                            size=70,
+                            label="test Knob",
+                            textSize=30)
+                    
+                    drawCBtn(screen=screen,
+                            pos=[450,450],
+                            label="Test Button",
+                            size=50,textSize=30,
+                            pressed = down,#(sp%30)>15,
+                            colour=white)
+                    
+                    drawVFad(screen= screen,
+                            pos=[750,150],
+                            size=[100,400],
+                            percentage=(boundValues(pg.mouse.get_pos()[1],150,550)-150)//4,
+                            label="Test V Fader",
+                            textSize=30
+                            )
+                    
+                    drawHFad(screen= screen,
+                            pos=[150,750],
+                            size=[400,100],
+                            percentage=(boundValues(pg.mouse.get_pos()[0],150,550)-150)//4,
+                            label="Test H Fader",
+                            textSize=30
+                            )
+                    
+                    #renderText(screen,f"H = {screen.get_height()} , W = {screen.get_width()}",[700,100],[255,255,255],size=20)
+                    renderText(screen,f"mouse_pos = ({pg.mouse.get_pos()})",[pg.mouse.get_pos()[0]+85,pg.mouse.get_pos()[1]+10],[255,255,255],size=10)
+                    sp = (sp + 1) % 360
+                    pg.display.flip()
+                    clock.tick(60)  
                 return
             finally:
                 device.close()
