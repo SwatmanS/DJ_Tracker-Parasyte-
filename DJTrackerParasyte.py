@@ -27,6 +27,8 @@ inputRecordingPath = "./Input_Recordings/"
 pdata = 0
 pButsBuffer = []
 pPotsBuffer = []
+do_Kon = True
+do_Draw = True
 
 Record = True
 
@@ -119,8 +121,8 @@ def loadControllerBBuffer(bBuff,controller:Kon):
     controller.FX.FX_Line_1.FX2Button.setPressed(DecodeButton(bBuff,14,6))
     controller.FX.FX_Line_1.FX1Button.setPressed(DecodeButton(bBuff,14,7))
 
-    controller.Deck_A.LoopSection.Left_Encoder.setPressed(DecodeButton(bBuff,15,0))
-    controller.Deck_A.LoopSection.Right_Encoder.setPressed(DecodeButton(bBuff,15,1))
+    controller.Deck_A.LoopSection.Left_Encoder.setPressed(DecodeButton(bBuff,15,1))
+    controller.Deck_A.LoopSection.Right_Encoder.setPressed(DecodeButton(bBuff,15,0))
     controller.Mixer.MasterSection.BrowseEncoder.setPressed(DecodeButton(bBuff,15,2))
     controller.Deck_B.LoopSection.Left_Encoder.setPressed(DecodeButton(bBuff,15,4))
     controller.Deck_B.LoopSection.Right_Encoder.setPressed(DecodeButton(bBuff,15,5))
@@ -131,12 +133,12 @@ def loadControllerBBuffer(bBuff,controller:Kon):
 
 def loadControllerPBuffer(pBuff,controller:Kon):
     controller.Deck_A.TempoSection.Tempo_Slider.setState(Decode16BitEncoder(pBuff,7))
-    controller.Deck_A.LoopSection.Left_Encoder.setState(Decode4BitEncoder(pBuff,1))
-    controller.Deck_A.LoopSection.Right_Encoder.setState( Decode4BitEncoder(pBuff,1,True))
+    controller.Deck_A.LoopSection.Left_Encoder.setState(Decode4BitEncoder(pBuff,1,True))
+    controller.Deck_A.LoopSection.Right_Encoder.setState( Decode4BitEncoder(pBuff,1))
 
     controller.Deck_B.TempoSection.Tempo_Slider.setState(Decode16BitEncoder(pBuff,2))
-    controller.Deck_B.LoopSection.Left_Encoder.setState(Decode4BitEncoder(pBuff,3))
-    controller.Deck_B.LoopSection.Right_Encoder.setState(Decode4BitEncoder(pBuff,3,True))
+    controller.Deck_B.LoopSection.Left_Encoder.setState(Decode4BitEncoder(pBuff,3,True))
+    controller.Deck_B.LoopSection.Right_Encoder.setState(Decode4BitEncoder(pBuff,3))
 
     controller.FX.FX_Line_1.DryWetKnob.setState(Decode16BitEncoder(pBuff,23))
     controller.FX.FX_Line_1.FX1Knob.setState(Decode16BitEncoder(pBuff,25))
@@ -166,7 +168,6 @@ def loadControllerPBuffer(pBuff,controller:Kon):
     controller.Mixer.MasterSection.MasterLevel.setState(Decode16BitEncoder(pBuff,15))
     controller.Mixer.MasterSection.RemixLevel.setState(Decode16BitEncoder(pBuff,13))
     controller.Mixer.MasterSection.BrowseEncoder.setState(Decode4BitEncoder(pBuff,2)) 
-
 
     return controller
 
@@ -210,29 +211,25 @@ def process_sample(data):
         #pButsBuffer = data
         #pPotsBuffer = data
         pdata = 1
-    
-    #print(data)
-    
-    print(f"{pButsBuffer[1]}\t{pButsBuffer[2]}\t{pButsBuffer[3]}\t{pButsBuffer[4]}\t{str(time.time())[8:15]}\t{data[4]-pButsBuffer[4]}")
-    sample_to_file(data=data,filename=inputRecordingPath+'DefaultValues.csv')
+    #print(f"{pButsBuffer[1]}\t{pButsBuffer[2]}\t{pButsBuffer[3]}\t{pButsBuffer[4]}\t{str(time.time())[8:15]}\t{data[4]-pButsBuffer[4]}")
+    if rec == '1':
+        sample_to_file(data=data,filename=inputRecordingPath+fn)
     if data[0] == 1: # Button Buffer  
-        controller = loadControllerBBuffer(bBuff=data,controller=controller)
-        for i in range(len(data)):
-            
+        #controller = loadControllerBBuffer(bBuff=data,controller=controller)
+        for i in range(len(data)): 
             if pButsBuffer[i] != data[i]:
                 #print(f"    Change in byte\t{i}\tfrom\t{pButsBuffer[i]}\tto\t{data[i]}\tof\t{data[i]-pButsBuffer[i]}")
                 #print(f"{DecodeButton(data,10,0)}\t{data[10]}")
                 pass
         pButsBuffer = data
     elif data[0] == 2: # Knob Buffer  
-        controller = loadControllerPBuffer(pBuff=data,controller=controller)
+        #controller = loadControllerPBuffer(pBuff=data,controller=controller)
         for i in range(len(data)):
             if pPotsBuffer[i] != data[i]:
                
                 #print(f"    Change in byte\t{i}\tfrom\t{pPotsBuffer[i]}\tto\t{data[i]}\tof\t{data[i]-pPotsBuffer[i]}")
                 pass
         pPotsBuffer = data
-
 
 def samples_from_file(filename = inputRecordingPath+"DefaultParasyteSessionFile.csv"):
     with open(filename, "r") as f:
@@ -242,8 +239,6 @@ def samples_from_file(filename = inputRecordingPath+"DefaultParasyteSessionFile.
         data = [[int(j) for j in i[1:]] for i in lines]
     return time , data
 
-   
-   
 def sample_to_file(data,filename = inputRecordingPath + "DefaultParasyteSessionFile.csv"):
     global start_time
     with open(filename,"a",newline = '') as f:
@@ -283,31 +278,23 @@ def hid_device_connection(fn = '',rec=False):
             if index_option.isdigit() and int(index_option) <= len(all_hids):
                 # invalid
                 break
-            
+
         int_option = int(index_option)
         if int_option:
             device = all_hids[int_option-1]
             try:
                 device.open()
-
                 #set custom raw data handler
-
                 device.set_raw_data_handler(sample_handler)
-                
-
                 print("\nWaiting for data...\nPress ESC key to stop...")
                 key_stroke = 0
                 while device.is_plugged():
                     #just keep the device opened to receive events
-                    #print(f"")
-                    
                     if msvcrt.kbhit():
-                        key_stroke = msvcrt.getche()
-                        
+                        key_stroke = msvcrt.getche()     
                         if key_stroke==chr(27).encode():
                             print ("Esc key pressed")
                             break
-                        
                     sleep(0.5)
                 return
             finally:
@@ -315,11 +302,22 @@ def hid_device_connection(fn = '',rec=False):
     else:
         print("There's not any non system HID class device available")
 
+def ControllerLoader():
+    global controller # Write Only
+    global pButsBuffer # Read Only
+    global pPotsBuffer # Read Only
+    global do_Kon
+    L_clock = pg.time.Clock()
+    while do_Kon:
+        controller = loadControllerBBuffer(bBuff=pButsBuffer,controller=controller)
+        controller = loadControllerPBuffer(pBuff=pPotsBuffer,controller=controller)
+        L_clock.tick(120)
         
 def draw_ControllerGUI():
-    # simple test
-    # browse devices...
     global controller
+    global do_Kon
+    #KonLoad_Thread = Thread(target=ControllerLoader,args=())
+    #KonLoad_Thread.start()
     ui = ControllerInterface()
     screen = ui.screen
     sp = 0
@@ -339,25 +337,27 @@ def draw_ControllerGUI():
             elif event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     done = True
+
         ##  Lines For Testing
-        pg.draw.line(screen,255,[900,0],[900,900])
-        pg.draw.line(screen,255,[0,450],[900,450])
-        pg.draw.line(screen,255,[450,0],[450,900])
+        ##pg.draw.line(screen,255,[875,0],[875,875])
+        ##pg.draw.line(screen,255,[0,875],[875,875])
+        ##pg.draw.line(screen,255,[0,0],[875,875])
         
 
         ##  Draw Deck A
         ##  A_JogWheel
+        A_JogPos = [400,400]
         drawJog(screen=screen,
-                pos=[450,350],
+                pos=A_JogPos,
                 deg=controller.Deck_A.JogSection.Jog.getState()*(255/360),
-                size=70,
-                pressed= controller.Deck_A.JogSection.Jog.getPressed(),#(sp%60) > 30,
+                size=100,
+                pressed= controller.Deck_A.JogSection.Jog.getPressed(),
                 label="Test Jog",
                 textSize=10)
-        ## A_Tempo
-        ##TempoPos = [200,900]
+        ## A_LoopSection
+        A_LoopPos = [250,600]
         drawEnc(screen=screen,
-                pos=[300,500],
+                pos=[A_LoopPos[0]+300,A_LoopPos[1]],
                 deg=22.5*controller.Deck_A.LoopSection.Left_Encoder.getState(),
                 size=30,
                 pressed=controller.Deck_A.LoopSection.Left_Encoder.getPressed(),
@@ -365,7 +365,7 @@ def draw_ControllerGUI():
                 textSize=10)
         
         drawEnc(screen=screen,
-                pos=[600,500],
+                pos=[A_LoopPos[0],A_LoopPos[1]],
                 deg=22.5*controller.Deck_A.LoopSection.Right_Encoder.getState(),
                 size=30,
                 pressed=controller.Deck_A.LoopSection.Right_Encoder.getPressed(),
@@ -373,127 +373,470 @@ def draw_ControllerGUI():
                 textSize=10)
         
         drawBtn(screen=screen,
-                pos=[400,500],
+                pos=[A_LoopPos[0]+100,A_LoopPos[1]],
                 label="IN",
                 size=40,textSize=10,
                 pressed = controller.Deck_A.LoopSection.In.getPressed(),
                 colour=white)
         
         drawBtn(screen=screen,
-                pos=[500,500],
+                pos=[A_LoopPos[0]+200,A_LoopPos[1]],
                 label="OUT",
                 size=40,textSize=10,
                 pressed = controller.Deck_A.LoopSection.Out.getPressed(),
                 colour=white)
         ##  A_HotCue
+        A_HotCuePos = [250,700]
         drawBtn(screen=screen,
-                pos=[300,600],
+                pos=[A_HotCuePos[0],A_HotCuePos[1]],
                 label="HotCue1",
                 size=40,textSize=10,
                 pressed = controller.Deck_A.HotCueSection.Cue1.getPressed(),
                 colour=white)
         drawBtn(screen=screen,
-                pos=[400,600],
+                pos=[A_HotCuePos[0]+100,A_HotCuePos[1]],
                 label="HotCue2",
                 size=40,textSize=10,
                 pressed = controller.Deck_A.HotCueSection.Cue2.getPressed(),
                 colour=white)
         drawBtn(screen=screen,
-                pos=[500,600],
+                pos=[A_HotCuePos[0]+200,A_HotCuePos[1]],
                 label="HotCue3",
                 size=40,textSize=10,
                 pressed = controller.Deck_A.HotCueSection.Cue3.getPressed(),
                 colour=white)
         drawBtn(screen=screen,
-                pos=[600,600],
+                pos=[A_HotCuePos[0]+300,A_HotCuePos[1]],
                 label="HotCue4",
                 size=40,textSize=10,
                 pressed = controller.Deck_A.HotCueSection.Cue4.getPressed(),
                 colour=white)
         ##  A_Transport
+        A_TransportPos = [250,800]
         drawBtn(screen=screen,
-                pos=[300,700],
+                pos=[A_TransportPos[0],A_TransportPos[1]],
                 label="Shift",
                 size=40,textSize=10,
                 pressed = controller.Deck_A.TransportSection.Shift.getPressed(),
                 colour=white)
         drawBtn(screen=screen,
-                pos=[400,700],
+                pos=[A_TransportPos[0]+100,A_TransportPos[1]],
                 label="Sync",
                 size=40,textSize=10,
                 pressed = controller.Deck_A.TransportSection.Sync.getPressed(),
                 colour=white)
         drawBtn(screen=screen,
-                pos=[500,700],
+                pos=[A_TransportPos[0]+200,A_TransportPos[1]],
                 label="Cue",
                 size=40,textSize=10,
                 pressed = controller.Deck_A.TransportSection.Cue.getPressed(),
                 colour=white)
         drawBtn(screen=screen,
-                pos=[600,700],
+                pos=[A_TransportPos[0]+300,A_TransportPos[1]],
                 label="Play",
                 size=40,textSize=10,
                 pressed = controller.Deck_A.TransportSection.Play.getPressed(),
                 colour=white)
         ## A_Tempo
+        A_TempoPos = [100,530]
         drawVFad(screen= screen,
-                pos=[100,500],
-                size=[100,400],
+                pos=[A_TempoPos[0],A_TempoPos[1]],
+                size=[80,300],
                 percentage=100-prep16BitEncoderState(controller.Deck_A.TempoSection.Tempo_Slider.getState()),
                 label="Deck A Tempo",
-                textSize=30
+                textSize=10
                 )
         drawCBtn(screen=screen,
-                pos=[150,400],
+                pos=[A_TempoPos[0]+40,A_TempoPos[1]-50],
                 label="Flux",
-                size=10,textSize=10,
+                size=15,textSize=10,
                 pressed = controller.Deck_A.TempoSection.Flux.getPressed(),
                 colour=white)
-        '''
-        drawKnb(screen=screen,
-                pos=[450,150],
-                deg=prep16BitKnobState(controller.Mixer.EQ_A_Section.EQ_LO.getState()),
-                size=70,
-                label=f"Knob {prep16BitKnobState(controller.Mixer.EQ_A_Section.EQ_LO.getState())}",
-                textSize=30)
+
+        ##  Draw Deck B
+        ##  B_JogWheel
+        B_JogPos = [1350,400]
+        drawJog(screen=screen,
+                pos=B_JogPos,
+                deg=controller.Deck_B.JogSection.Jog.getState()*(255/360),
+                size=100,
+                pressed= controller.Deck_B.JogSection.Jog.getPressed(),
+                label="Test Jog",
+                textSize=10)
+        ## B_LoopSection
+        B_LoopPos = [1200,600]
+        drawEnc(screen=screen,
+                pos=[B_LoopPos[0]+300,B_LoopPos[1]],
+                deg=22.5*controller.Deck_B.LoopSection.Left_Encoder.getState(),
+                size=30,
+                pressed=controller.Deck_B.LoopSection.Left_Encoder.getPressed(),
+                label="Deck B L Enc",
+                textSize=10)
         
-        drawCBtn(screen=screen,
-                pos=[450,450],
-                label="Deck A Flux",
-                size=50,textSize=30,
-                pressed = controller.Deck_A.TempoSection.Flux.getPressed(),
+        drawEnc(screen=screen,
+                pos=[B_LoopPos[0],B_LoopPos[1]],
+                deg=22.5*controller.Deck_B.LoopSection.Right_Encoder.getState(),
+                size=30,
+                pressed=controller.Deck_B.LoopSection.Right_Encoder.getPressed(),
+                label="Deck B R Enc",
+                textSize=10)
+        
+        drawBtn(screen=screen,
+                pos=[B_LoopPos[0]+100,B_LoopPos[1]],
+                label="IN",
+                size=40,textSize=10,
+                pressed = controller.Deck_B.LoopSection.In.getPressed(),
                 colour=white)
         
+        drawBtn(screen=screen,
+                pos=[B_LoopPos[0]+200,B_LoopPos[1]],
+                label="OUT",
+                size=40,textSize=10,
+                pressed = controller.Deck_B.LoopSection.Out.getPressed(),
+                colour=white)
+        ##  B_HotCue
+        B_HotCuePos = [1200,700]
+        drawBtn(screen=screen,
+                pos=[B_HotCuePos[0],B_HotCuePos[1]],
+                label="HotCue1",
+                size=40,textSize=10,
+                pressed = controller.Deck_B.HotCueSection.Cue1.getPressed(),
+                colour=white)
+        drawBtn(screen=screen,
+                pos=[B_HotCuePos[0]+100,B_HotCuePos[1]],
+                label="HotCue2",
+                size=40,textSize=10,
+                pressed = controller.Deck_B.HotCueSection.Cue2.getPressed(),
+                colour=white)
+        drawBtn(screen=screen,
+                pos=[B_HotCuePos[0]+200,B_HotCuePos[1]],
+                label="HotCue3",
+                size=40,textSize=10,
+                pressed = controller.Deck_B.HotCueSection.Cue3.getPressed(),
+                colour=white)
+        drawBtn(screen=screen,
+                pos=[B_HotCuePos[0]+300,B_HotCuePos[1]],
+                label="HotCue4",
+                size=40,textSize=10,
+                pressed = controller.Deck_B.HotCueSection.Cue4.getPressed(),
+                colour=white)
+        ##  B_Transport
+        B_TransportPos = [1200,800]
+        drawBtn(screen=screen,
+                pos=[B_TransportPos[0],B_TransportPos[1]],
+                label="Shift",
+                size=40,textSize=10,
+                pressed = controller.Deck_B.TransportSection.Shift.getPressed(),
+                colour=white)
+        drawBtn(screen=screen,
+                pos=[B_TransportPos[0]+100,B_TransportPos[1]],
+                label="Sync",
+                size=40,textSize=10,
+                pressed = controller.Deck_B.TransportSection.Sync.getPressed(),
+                colour=white)
+        drawBtn(screen=screen,
+                pos=[B_TransportPos[0]+200,B_TransportPos[1]],
+                label="Cue",
+                size=40,textSize=10,
+                pressed = controller.Deck_B.TransportSection.Cue.getPressed(),
+                colour=white)
+        drawBtn(screen=screen,
+                pos=[B_TransportPos[0]+300,B_TransportPos[1]],
+                label="Play",
+                size=40,textSize=10,
+                pressed = controller.Deck_B.TransportSection.Play.getPressed(),
+                colour=white)
+        ## B_Tempo
+        B_TempoPos = [1550,530] ## +350
         drawVFad(screen= screen,
-                pos=[750,150],
-                size=[100,400],
+                pos=[B_TempoPos[0],B_TempoPos[1]],
+                size=[80,300],
+                percentage=100-prep16BitEncoderState(controller.Deck_B.TempoSection.Tempo_Slider.getState()),
+                label="Deck B Tempo",
+                textSize=10
+                )
+        drawCBtn(screen=screen,
+                pos=[B_TempoPos[0]+40,B_TempoPos[1]-50],
+                label="Flux",
+                size=15,textSize=10,
+                pressed = controller.Deck_B.TempoSection.Flux.getPressed(),
+                colour=white)
+
+        ## FX Line 1
+        FX1Pos = [100,100]
+        ##buttons
+        drawCBtn(screen=screen,
+                pos=[FX1Pos[0]+50,FX1Pos[1]+50],
+                label="Dry/Wet",
+                size=15,textSize=10,
+                pressed = controller.FX.FX_Line_1.DryWetButton.getPressed(),
+                colour=white)
+
+        drawCBtn(screen=screen,
+                pos=[FX1Pos[0]+150,FX1Pos[1]+50],
+                label="FX 1",
+                size=15,textSize=10,
+                pressed = controller.FX.FX_Line_1.DryWetButton.getPressed(),
+                colour=white)
+
+        drawCBtn(screen=screen,
+                pos=[FX1Pos[0]+250,FX1Pos[1]+50],
+                label="FX 2",
+                size=15,textSize=10,
+                pressed = controller.FX.FX_Line_1.DryWetButton.getPressed(),
+                colour=white)
+
+        drawCBtn(screen=screen,
+                pos=[FX1Pos[0]+350,FX1Pos[1]+50],
+                label="FX 2",
+                size=15,textSize=10,
+                pressed = controller.FX.FX_Line_1.DryWetButton.getPressed(),
+                colour=white)
+
+        drawKnb(screen=screen,
+                pos=[FX1Pos[0],FX1Pos[1]],
+                deg=prep16BitKnobState(controller.FX.FX_Line_1.DryWetKnob.getState()),
+                size=20, textSize=10,
+                label="Dry/Wet",
+                colour=white)
+
+        drawKnb(screen=screen,
+                pos=[FX1Pos[0]+100,FX1Pos[1]],
+                deg=prep16BitKnobState(controller.FX.FX_Line_1.FX1Knob.getState()),
+                size=20, textSize=10,
+                label="FX 1",
+                colour=white)
+        
+        drawKnb(screen=screen,
+                pos=[FX1Pos[0]+200,FX1Pos[1]],
+                deg=prep16BitKnobState(controller.FX.FX_Line_1.FX2Knob.getState()),
+                size=20, textSize=10,
+                label="FX 2",
+                colour=white)
+        
+        drawKnb(screen=screen,
+                pos=[FX1Pos[0]+300,FX1Pos[1]],
+                deg=prep16BitKnobState(controller.FX.FX_Line_1.FX3Knob.getState()),
+                size=20, textSize=10,
+                label="FX 3",
+                colour=white)
+        
+         ## FX Line 2
+        FX2Pos = [1250,100]
+        ##buttons
+        drawCBtn(screen=screen,
+                pos=[FX2Pos[0]+50,FX2Pos[1]+50],
+                label="Dry/Wet",
+                size=15,textSize=10,
+                pressed = controller.FX.FX_Line_2.DryWetButton.getPressed(),
+                colour=white)
+
+        drawCBtn(screen=screen,
+                pos=[FX2Pos[0]+150,FX2Pos[1]+50],
+                label="FX 1",
+                size=15,textSize=10,
+                pressed = controller.FX.FX_Line_2.DryWetButton.getPressed(),
+                colour=white)
+
+        drawCBtn(screen=screen,
+                pos=[FX2Pos[0]+250,FX2Pos[1]+50],
+                label="FX 2",
+                size=15,textSize=10,
+                pressed = controller.FX.FX_Line_2.DryWetButton.getPressed(),
+                colour=white)
+
+        drawCBtn(screen=screen,
+                pos=[FX2Pos[0]+350,FX2Pos[1]+50],
+                label="FX 2",
+                size=15,textSize=10,
+                pressed = controller.FX.FX_Line_2.DryWetButton.getPressed(),
+                colour=white)
+
+        drawKnb(screen=screen,
+                pos=[FX2Pos[0],FX2Pos[1]],
+                deg=prep16BitKnobState(controller.FX.FX_Line_2.DryWetKnob.getState()),
+                size=20, textSize=10,
+                label="Dry/Wet",
+                colour=white)
+
+        drawKnb(screen=screen,
+                pos=[FX2Pos[0]+100,FX2Pos[1]],
+                deg=prep16BitKnobState(controller.FX.FX_Line_2.FX1Knob.getState()),
+                size=20, textSize=10,
+                label="FX 1",
+                colour=white)
+        
+        drawKnb(screen=screen,
+                pos=[FX2Pos[0]+200,FX2Pos[1]],
+                deg=prep16BitKnobState(controller.FX.FX_Line_2.FX2Knob.getState()),
+                size=20, textSize=10,
+                label="FX 2",
+                colour=white)
+        
+        drawKnb(screen=screen,
+                pos=[FX2Pos[0]+300,FX2Pos[1]],
+                deg=prep16BitKnobState(controller.FX.FX_Line_2.FX3Knob.getState()),
+                size=20, textSize=10,
+                label="FX 3",
+                colour=white)
+    
+        ## Mixer
+        MixerPos = [875,875]
+        ## Levels
+        drawBtn(screen=screen,
+                pos=[MixerPos[0]-170,MixerPos[1]-450],
+                label="Cue A",
+                size=20,textSize=10,
+                pressed = controller.Mixer.FaderSection.CueA.getPressed(),
+                colour=white)
+        drawVFad(screen= screen,
+                pos=[MixerPos[0]-210,MixerPos[1]-400],
+                size=[80,200],
                 percentage=100-prep16BitEncoderState(controller.Mixer.FaderSection.LevelA.getState()),
                 label="Deck A Level",
-                textSize=30
+                textSize=10
                 )
-
+        
+        drawBtn(screen=screen,
+                pos=[MixerPos[0]+185,MixerPos[1]-450],
+                label="Cue B",
+                size=20,textSize=10,
+                pressed = controller.Mixer.FaderSection.CueB.getPressed(),
+                colour=white)
+        
         drawVFad(screen= screen,
-                pos=[1150,150],
-                size=[100,400],
+                pos=[MixerPos[0]+150,MixerPos[1]-400],
+                size=[80,200],
                 percentage=100-prep16BitEncoderState(controller.Mixer.FaderSection.LevelB.getState()),
                 label="Deck B Level",
-                textSize=30
+                textSize=10
                 )
         
         drawHFad(screen= screen,
-                pos=[1000,750],
-                size=[400,100],
-                percentage=prep16BitEncoderState(controller.Mixer.FaderSection.CrossFader.getState()),
+                pos=[MixerPos[0]-150,MixerPos[1]-100],
+                size=[300,80],
+                percentage=100-prep16BitEncoderState(controller.Mixer.FaderSection.CrossFader.getState()),
                 label="Crossfader",
-                textSize=30
-                )'''
+                textSize=10
+                )
+        ## Master
+        drawEnc(screen=screen,
+                pos=[MixerPos[0],MixerPos[1]-400],
+                deg=prep4BitEncoderState(controller.Mixer.MasterSection.BrowseEncoder.getState()),
+                pressed= controller.Mixer.MasterSection.BrowseEncoder.getPressed(),
+                size=20, textSize=10,
+                label="Browse")#,
+                #colour=white)
+        drawCBtn(screen=screen,
+                pos=[MixerPos[0]-50,MixerPos[1]-350],
+                label="Load A",
+                size=10,textSize=10,
+                pressed = controller.Mixer.MasterSection.LoadA.getPressed(),
+                colour=white)
+        drawCBtn(screen=screen,
+                pos=[MixerPos[0]+50,MixerPos[1]-350],
+                label="Load B",
+                size=10,textSize=10,
+                pressed = controller.Mixer.MasterSection.LoadB.getPressed(),
+                colour=white)
         
-        #renderText(screen,f"H = {screen.get_height()} , W = {screen.get_width()}",[700,100],[255,255,255],size=20)
-        renderText(screen,f"mouse_pos = ({pg.mouse.get_pos()})",[pg.mouse.get_pos()[0]+85,pg.mouse.get_pos()[1]+10],[255,255,255],size=10)
-        renderText(screen,f"{time.time()-start_time}",[900,900],[255,255,255],size=30)
+        drawKnb(screen=screen,
+                pos=[MixerPos[0],MixerPos[1]-800],
+                deg=prep16BitKnobState(controller.Mixer.MasterSection.MasterLevel.getState()),
+                size=20, textSize=10,
+                label="Master",
+                colour=white)
+
+        ## Line A
+        drawKnb(screen=screen,
+                pos=[MixerPos[0]-75,MixerPos[1]-500],
+                deg=prep16BitKnobState(controller.Mixer.EQ_A_Section.EQ_LO.getState()),
+                size=20, textSize=10,
+                label="Low",
+                colour=white)
+        drawKnb(screen=screen,
+                pos=[MixerPos[0]-75,MixerPos[1]-600],
+                deg=prep16BitKnobState(controller.Mixer.EQ_A_Section.EQ_MID.getState()),
+                size=20, textSize=10,
+                label="Low",
+                colour=white)
+        
+        drawKnb(screen=screen,
+                pos=[MixerPos[0]-75,MixerPos[1]-700],
+                deg=prep16BitKnobState(controller.Mixer.EQ_A_Section.EQ_HI.getState()),
+                size=20, textSize=10,
+                label="Low",
+                colour=white)
+        
+        drawEnc(screen=screen,
+                pos=[MixerPos[0]-250,MixerPos[1]-700],
+                deg=prep4BitEncoderState(controller.Mixer.EQ_A_Section.FXEncoder.getState()),
+                pressed= controller.Mixer.EQ_A_Section.FXEncoder.getPressed(),
+                size=20, textSize=10,
+                label="Gain/FX")#,
+                #colour=white)
+        drawCBtn(screen=screen,
+                pos=[MixerPos[0]-300,MixerPos[1]-650],
+                label="FX1",
+                size=10,textSize=10,
+                pressed = controller.Mixer.EQ_A_Section.FX1Select.getPressed(),
+                colour=white)
+        drawCBtn(screen=screen,
+                pos=[MixerPos[0]-200,MixerPos[1]-650],
+                label="FX2",
+                size=10,textSize=10,
+                pressed = controller.Mixer.EQ_A_Section.FX2Select.getPressed(),
+                colour=white)
+
+        ## Line B
+        drawKnb(screen=screen,
+                pos=[MixerPos[0]+75,MixerPos[1]-500],
+                deg=prep16BitKnobState(controller.Mixer.EQ_B_Section.EQ_LO.getState()),
+                size=20, textSize=10,
+                label="Low",
+                colour=white)
+        drawKnb(screen=screen,
+                pos=[MixerPos[0]+75,MixerPos[1]-600],
+                deg=prep16BitKnobState(controller.Mixer.EQ_B_Section.EQ_MID.getState()),
+                size=20, textSize=10,
+                label="Low",
+                colour=white)
+        
+        drawKnb(screen=screen,
+                pos=[MixerPos[0]+75,MixerPos[1]-700],
+                deg=prep16BitKnobState(controller.Mixer.EQ_B_Section.EQ_HI.getState()),
+                size=20, textSize=10,
+                label="Low",
+                colour=white)
+        
+        drawEnc(screen=screen,
+                pos=[MixerPos[0]+250,MixerPos[1]-700],
+                deg=prep4BitEncoderState(controller.Mixer.EQ_B_Section.FXEncoder.getState()),
+                pressed= controller.Mixer.EQ_B_Section.FXEncoder.getPressed(),
+                size=20, textSize=10,
+                label="Gain/FX")#,
+                #colour=white)
+        drawCBtn(screen=screen,
+                pos=[MixerPos[0]+300,MixerPos[1]-650],
+                label="FX1",
+                size=10,textSize=10,
+                pressed = controller.Mixer.EQ_B_Section.FX1Select.getPressed(),
+                colour=white)
+        drawCBtn(screen=screen,
+                pos=[MixerPos[0]+200,MixerPos[1]-650],
+                label="FX2",
+                size=10,textSize=10,
+                pressed = controller.Mixer.EQ_B_Section.FX2Select.getPressed(),
+                colour=white)
+        renderText(screen,f"mouse_pos = ({pg.mouse.get_pos()})",[pg.mouse.get_pos()[0]+85,pg.mouse.get_pos()[1]+10],[255,255,255],size=10)  
         sp = (sp + 1) % 360
         pg.display.flip()
-        clock.tick(60)  
+
+        clock.tick(60)
+   
+    pg.quit()
+    do_Kon = False
+    #Gui_Thread.join()
 
 if __name__ == '__main__':
     global controller
@@ -510,37 +853,57 @@ if __name__ == '__main__':
     
     print("DJ_Parasyte Version: Pre-Alpha")
     print("Author: Sam Swatman")
+
     
     controller = loadController()
+    pg.mixer.init() 
     loadGlobals()
     start_time = time.time()
     Gui_Thread = Thread(target=draw_ControllerGUI,args=())
-    mode = input("\nConnect to Hid or Replay from file?\n1 -\tHid Device Connection\n2 -\tReplay From File\n3 -\tQuit\n> ")
+    KonLoad_Thread = Thread(target=ControllerLoader,args=())
+    
+    mode = input("\nConnect to Hid or Replay from file?\n1 -\tHid Device Connection\n2 -\tReplay From File\n3 -\tDebug Screen\n4 -\tQuit\n> ")
     GUI = input("\nEnable GUI?\n1 - Yes\n0 - No\n> ")
+    rec = 'NO'
     if mode == "1":
         rec = input("\nWould you like to record to a file?\n1 - Yes\nAny Key - No\n> ")
-        fn = inputRecordingPath + datetime.datetime.now().__str__() + "_SessionFile.csv"
+        fn = datetime.datetime.now().__str__().replace(":","_").replace(".","_").replace("-","_") + "_SessionFile.csv"
         if GUI != '1':
             hid_device_connection()
+            
         else:
+            KonLoad_Thread.start()
             Gui_Thread.start()
-            hid_device_connection()               
+            hid_device_connection()
+            #Gui_Thread.join()    
+            KonLoad_Thread.join()       
     elif mode == "2":
         if GUI == '1':
             Gui_Thread.start()
-        times,data = samples_from_file(inputRecordingPath + "AFXBUTTONSTHENKNOBS.csv")
+            KonLoad_Thread.start()
+        times,data = samples_from_file(inputRecordingPath + "2025_03_08 18_04_33_499196_SessionFile.csv")
+        audio = "audio.wav"
+        audio_start = 80.067
+        audio_play = False
+       
+        pg.mixer.music.load(audio)
         start_time = time.time()
         
         for i,sample in enumerate(data):
             while float(times[i]) > float(time.time()-start_time):
                 ##  Spinlock
                 pass
-            
+            print(time.time()-start_time)
+            if audio_play == False and float(time.time()-start_time) >= audio_start:
+                audio_play = True
+                pg.mixer.music.play()
             print(str(times[i])[:5],end="\t") 
             process_sample(sample)
-        Gui_Thread.join()
-                 
+        #Gui_Thread.join()
+        KonLoad_Thread.join()
     elif mode == "3":
+        Gui_Thread.start()
+    elif mode == "4":
         quit()
 
 

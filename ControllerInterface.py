@@ -77,17 +77,17 @@ def drawEnc(screen, pos = [0,0], deg = 0,size = 50,pressed = False,label='',text
                  width = 2)
     renderText(screen,label,tPos,[255,255,255],textSize)
 
-def drawKnb(screen, pos = [0,0], deg = 0,size = 50,label='',textSize=50):
+def drawKnb(screen, pos = [0,0], deg = 0,size = 50,label='',textSize=50, colour = [255,255,255]):
     ex = size
     ey = size
     
     pg.draw.polygon(screen,
-                    [255,255,255],
+                    colour,
                     [(spin(deg+(i*45),ex,ey)[0] + pos[0] ,spin(deg+(i*45),ex,ey)[1] + pos[1]) for i in range(8)],
                     width = 2)
-    pg.draw.line(screen,[255,255,255],pos,[spin(deg,(ex),(ey))[0]+pos[0],spin(deg,(ex),(ey))[1] + pos[1]],width = 2)
+    pg.draw.line(screen,colour,pos,[spin(deg,(ex),(ey))[0]+pos[0],spin(deg,(ex),(ey))[1] + pos[1]],width = 2)
     tPos = [pos[0],pos[1]+(1.2*size)]
-    renderText(screen,label,tPos,[255,255,255],textSize)
+    renderText(screen,label,tPos,colour,textSize)
 
 def drawVFad(screen, pos = [0,0], percentage = 0,size = [10,40],label='',textSize=50):
     Val = percentage
@@ -225,8 +225,8 @@ def testGraphics(screen,clock):
 def interfaceSetup():
     pg.init()
     fps = 60
-    size = width, height = 900,1600
-    screen = pg.display.set_mode((0,0),pg.FULLSCREEN)
+    size = width, height =  1600,900
+    screen = pg.display.set_mode((0,0),pg.RESIZABLE)
     screenRect = screen.get_rect()
     pg.display.set_caption("Controler Display")
     clock = pg.time.Clock()
@@ -235,8 +235,8 @@ class ControllerInterface:
     def __init__(self,Title="Controler Display" ):
         pg.init()
         self.fps = 60
-        self.size = self.width, self.height = 900,1600
-        self.screen = pg.display.set_mode((0,0),pg.FULLSCREEN)
+        self.size = self.width, self.height = 1700,900
+        self.screen = pg.display.set_mode(self.size,pg.RESIZABLE)
         self.screenRect = self.screen.get_rect()
         pg.display.set_caption(Title)
         self.clock = pg.time.Clock()
@@ -245,7 +245,7 @@ if __name__ == "__main__":
     
     pg.init()
     fps = 60
-    size = width, height = 900,1600
+    size = width, height =  1600,900
     screen = pg.display.set_mode((0,0),pg.FULLSCREEN)
     screenRect = screen.get_rect()
     pg.display.set_caption("Controler Display")
