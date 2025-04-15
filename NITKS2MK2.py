@@ -270,3 +270,134 @@ class TKS2MK2:
                            MasterBoundStruct(encoderBounds(),encoderBounds(),encoderBounds()))
         self.FX = FX("FX",FXBoundsStruct(),FXBoundsStruct())
         self.Time = 0
+
+class TimeControl:
+    lastOp = 0
+    #delta time (current - start)
+    currentVal = 0
+    upcomingOp = False
+    nextOp = 0
+    #Time of next OP
+    colour = [255,255,255]
+    altColour = [255,0,0]
+    def loadCurrentState(self,sT,cT,value):
+        if self.currentVal == value:
+            r = self.colour[0]*0.9
+            b = self.colour[1]*0.9
+            g = self.colour[2]*0.9
+            if sum([r,b,g]) < sum([64,64,64]):
+                self.colour = [64,64,64]
+            else:
+                self.colour = [(int(r)),(int(b)),(int(g))]
+        else:
+            self.currentVal = value
+            self.lastOp = cT
+            self.colour = [255,255,255]
+    def anticipate(self,cT,fT):
+        until = fT - cT
+        lookahead = 1 #second
+        if cT >= fT-lookahead:
+            r = (self.colour[0]*(until/1)) + (self.altColour[0]*((1-until)/1))
+            b = (self.colour[1]*(until/1)) + (self.altColour[1]*((1-until)/1))
+            g = (self.colour[2]*(until/1)) + (self.altColour[2]*((1-until)/1))  
+        self.colour = [(int(r)),(int(b)),(int(g))] 
+
+
+class TKS2MK2_TimeControl:
+    DeckATempoSlider = TimeControl()
+    DeckALoopEncL = TimeControl()
+    DeckALoopEncR = TimeControl()
+
+    DeckBTempoSlider = TimeControl()
+    DeckBLoopEncL = TimeControl()
+    DeckBLoopEncR = TimeControl()
+    
+    FxLine1DW = TimeControl()
+    FxLine1K1 = TimeControl()
+    FxLine1K2 = TimeControl()
+    FxLine1K3 = TimeControl()
+
+    FxLine2DW = TimeControl()
+    FxLine2K1 = TimeControl()
+    FxLine2K2 = TimeControl()
+    FxLine2K3 = TimeControl()
+
+    LevelA = TimeControl()
+    LevelB = TimeControl()
+    Crossfader = TimeControl()
+
+    EqA_HI = TimeControl()
+    EqA_MI = TimeControl()
+    EqA_LO = TimeControl()
+
+    EqB_HI = TimeControl()
+    EqB_MI = TimeControl()
+    EqB_LO = TimeControl()
+
+    DeckAFxEnc = TimeControl()
+    DeckBFxEnc = TimeControl()
+
+    MasterLevel = TimeControl()
+    BrowserEnc = TimeControl()
+
+    DeckAPlay = TimeControl()
+    DeckACue = TimeControl()
+    DeckASync = TimeControl()
+    DeckAShift = TimeControl()
+    DeckAHot1 = TimeControl()
+    DeckAHot2 = TimeControl()
+    DeckAHot3 = TimeControl()
+    DeckAHot4 = TimeControl()
+
+    DeckBPlay = TimeControl()
+    DeckBCue = TimeControl()
+    DeckBSync = TimeControl()
+    DeckBShift = TimeControl()
+    DeckBHot1 = TimeControl()
+    DeckBHot2 = TimeControl()
+    DeckBHot3 = TimeControl()
+    DeckBHot4 = TimeControl()
+
+    DeckAJogPressed = TimeControl()
+    HeadPhoneCueA = TimeControl()
+    DeckAFlux = TimeControl()
+    DeckALoopIn = TimeControl()
+    DeckALoopOut = TimeControl()
+    DeckALoad = TimeControl()
+
+    DeckBJogPressed = TimeControl()
+    HeadPhoneCueB = TimeControl()
+    DeckBFlux = TimeControl()
+    DeckBLoopIn = TimeControl()
+    DeckBLoopOut = TimeControl()
+    DeckBLoad = TimeControl()
+
+    FxLine1DWButton = TimeControl()
+    FxLine1K1Button = TimeControl()
+    FxLine1K2Button = TimeControl()
+    FxLine1K3Button = TimeControl()
+
+    FxLine2DWButton = TimeControl()
+    FxLine2K1Button = TimeControl()
+    FxLine2K2Button = TimeControl()
+    FxLine2K3Button = TimeControl()
+
+    DeckAFxLine1Select = TimeControl()
+    DeckAFxLine2Select = TimeControl()
+    DeckBFxLine1Select = TimeControl()
+    DeckBFxLine2Select = TimeControl()
+    
+    DeckAFxEncPress = TimeControl()
+    DeckBFxEncPress = TimeControl()
+
+    DeckALoopEncLPress = TimeControl()
+    DeckALoopEncRPress = TimeControl()
+    DeckBLoopEncLPress = TimeControl()
+    DeckBLoopEncRPress = TimeControl()
+
+    BrowseEncPress = TimeControl()
+    
+    DeckAJog = TimeControl()
+    DeckBJog = TimeControl()
+
+    
