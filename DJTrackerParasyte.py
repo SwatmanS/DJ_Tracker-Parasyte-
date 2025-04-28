@@ -1281,6 +1281,101 @@ if __name__ == '__main__':
             process_sample(sample)
         #Gui_Thread.join()
         KonLoad_Thread.join()
-
-
+    elif mode == "DemoP4":
+        if GUI == '1':
+            Gui_Thread.start()
+            KonLoad_Thread.start()
+        times,data = samples_from_file(inputRecordingPath + "2025_04_25 14_14_54_018132_SessionFile.csv")
+        audio = "P4Demo.wav"
+        audio_start = 17.9
+        audio_play = False
+       
+        pg.mixer.music.load(audio)
+        start_time = time.time()
+        
+        for i,sample in enumerate(data):
+            while float(times[i]) > float(time.time()-start_time):
+                ##  Spinlock
+                pass
+            print(time.time()-start_time )
+            if audio_play == False and float(time.time()-start_time) >= audio_start:
+                audio_play = True
+                pg.mixer.music.play()
+            print(str(times[i])[:5],end="\t") 
+            process_sample(sample)
+        #Gui_Thread.join()
+        KonLoad_Thread.join()
+    elif mode == "DemoP3":
+        if GUI == '1':
+            Gui_Thread.start()
+            KonLoad_Thread.start()
+        times,data = samples_from_file(inputRecordingPath + "2025_04_25 15_01_34_689644_SessionFile.csv")
+        audio = "P3Demo.wav"
+        audio_start = 30.66
+        audio_play = False
+       
+        pg.mixer.music.load(audio)
+        start_time = time.time()
+        
+        for i,sample in enumerate(data):
+            while float(times[i]) > float(time.time()-start_time):
+                ##  Spinlock
+                pass
+            print(time.time()-start_time )
+            if audio_play == False and float(time.time()-start_time) >= audio_start:
+                audio_play = True
+                pg.mixer.music.play()
+            print(str(times[i])[:5],end="\t") 
+            process_sample(sample)
+        #Gui_Thread.join()
+        KonLoad_Thread.join()
+    elif mode == "DemoP2":
+        if GUI == '1':
+            Gui_Thread.start()
+            KonLoad_Thread.start()
+        times,data = samples_from_file(inputRecordingPath + "2025_04_25 15_40_09_937865_SessionFile.csv")
+        audio = "P2Demo.wav"
+        audio_start = 120.22
+        audio_play = False
+       
+        pg.mixer.music.load(audio)
+        start_time = time.time()
+        
+        for i,sample in enumerate(data):
+            while float(times[i]) > float(time.time()-start_time):
+                ##  Spinlock
+                pass
+            print(time.time()-start_time )
+            if audio_play == False and float(time.time()-start_time) >= audio_start:
+                audio_play = True
+                pg.mixer.music.play()
+            print(str(times[i])[:5],end="\t") 
+            process_sample(sample)
+        #Gui_Thread.join()
+        KonLoad_Thread.join()
+    elif mode == "DemoP5":
+        if GUI == '1':
+            Gui_Thread.start()
+            KonLoad_Thread.start()
+        times,data = 1
+        samples_from_file(inputRecordingPath + ".csv")
+        audio = "P5Demo.wav"
+        audio_start = 14.81
+        audio_play = False
+       
+        pg.mixer.music.load(audio)
+        start_time = time.time()
+        
+        for i,sample in enumerate(data):
+            while float(times[i]) > float(time.time()-start_time):
+                ##  Spinlock
+                pass
+            print(time.time()-start_time )
+            if audio_play == False and float(time.time()-start_time) >= audio_start:
+                audio_play = True
+                pg.mixer.music.play()
+            print(str(times[i])[:5],end="\t") 
+            process_sample(sample)
+        #Gui_Thread.join()
+        KonLoad_Thread.join()
 
