@@ -507,7 +507,7 @@ def process_sample(data):
         #controller = loadControllerBBuffer(bBuff=data,controller=controller)
         for i in range(len(data)): 
             if pButsBuffer[i] != data[i]:
-                print(f">        Change in byte\t{i}\tfrom\t{pButsBuffer[i]}\tto\t{data[i]}\tof\t{data[i]-pButsBuffer[i]}")
+                print(f"> Change in byte\t{i}\tfrom\t{pButsBuffer[i]}\tto\t{data[i]}\tof\t{data[i]-pButsBuffer[i]}")
                 #print(f"{DecodeButton(data,10,0)}\t{data[10]}")
                 pass
         pButsBuffer = data
@@ -515,7 +515,7 @@ def process_sample(data):
         #controller = loadControllerPBuffer(pBuff=data,controller=controller)
         for i in range(len(data)):
             if pPotsBuffer[i] != data[i]:
-                print(f">       Change in byte\t{i}\tfrom\t{pPotsBuffer[i]}\tto\t{data[i]}\tof\t{data[i]-pPotsBuffer[i]}")
+                print(f"> Change in byte\t{i}\tfrom\t{pPotsBuffer[i]}\tto\t{data[i]}\tof\t{data[i]-pPotsBuffer[i]}")
                 pass
         pPotsBuffer = data
 
