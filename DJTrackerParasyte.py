@@ -188,7 +188,7 @@ def loadController():
         lines = [[int(j) for j in i] for i in reader]
     bBuff = lines[0]
     pBuff = lines[1]
-    print(lines)
+    #print(lines)
     controller = Kon(name="NITKS2MK2")
     ##  Load p Buffer Values
     controller = loadControllerPBuffer(pBuff,controller)
@@ -559,13 +559,10 @@ def hid_device_connection(fn = '',rec=False):
                 
             print("\n\tDevice ('0' to '%d', '0' to exit?) " \
                     "[press enter after number]:" % len(all_hids),end="\n> ")
-            
-            index_option = raw_input()
-            
+            index_option = raw_input()     
             if index_option.isdigit() and int(index_option) <= len(all_hids):
                 # invalid
                 break
-
         int_option = int(index_option)
         if int_option:
             device = all_hids[int_option-1]
