@@ -7,14 +7,6 @@ def spin(ang,p,q):
     b = ((q*(math.cos(math.radians(ang))))+(p*(math.sin(math.radians(ang)))))
     return a,b
 
-def three(rot,pot):
-    x,y,z=pot[0],pot[1],pot[2]
-    rol,pit,yaw = rot[0],rot[1],rot[2]
-    x,y = spin(rol,x,y)
-    y,z = spin(pit,y,z)
-    x,z= spin(yaw,x,z)
-    return x,y,z
-
 def boundValues(Value,Low = 0,High = 100):
     if Value <= Low:
         return Low

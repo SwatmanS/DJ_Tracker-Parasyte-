@@ -1153,13 +1153,10 @@ if __name__ == '__main__':
         # as is, don't handle unicodes
         unicode = str
         raw_input = input
-        
-            
     else:
         # allow to show encoded strings
         import codecs
         sys.stdout = codecs.getwriter('mbcs')(sys.stdout)
-    
     print("DJ_Parasyte Version: Pre-Alpha")
     print("Author: Sam Swatman")
     global start_time
@@ -1357,8 +1354,7 @@ if __name__ == '__main__':
         if GUI == '1':
             Gui_Thread.start()
             KonLoad_Thread.start()
-        times,data = 1
-        samples_from_file(inputRecordingPath + ".csv")
+        times,data = samples_from_file(inputRecordingPath + "2025_04_25 16_15_39_034904_SessionFile.csv")
         audio = "P5Demo.wav"
         audio_start = 14.81
         audio_play = False

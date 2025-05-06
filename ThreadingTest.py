@@ -4,7 +4,7 @@ import time
 
 x = 0
 
-
+## This is a test to check threading works
 def thread_a():
     global x
     
@@ -24,3 +24,4 @@ thread2 = threading.Thread( target=thread_b)
 thread1.start()
 thread2.start()
 
+## Ok threading works
