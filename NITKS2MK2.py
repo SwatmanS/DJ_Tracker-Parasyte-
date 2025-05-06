@@ -273,7 +273,7 @@ class TKS2MK2:
 
 class TimeControl:
     lastOp = 0
-    #delta time (current - start)
+    #time (current - start)
     currentVal = 0
     upcomingOp = False
     nextOp = 0
