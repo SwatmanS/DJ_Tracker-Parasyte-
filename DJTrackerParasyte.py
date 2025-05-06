@@ -492,6 +492,7 @@ def process_sample(data):
     global pdata
     global controller
     global rec 
+    global fn
     if pdata == 0:
         #   Populating the Previous data variable
         print("Starting Listener...\n")
