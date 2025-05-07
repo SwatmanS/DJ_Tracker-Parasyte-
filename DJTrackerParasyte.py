@@ -1172,6 +1172,7 @@ if __name__ == '__main__':
     GUI = input("\nEnable GUI?\n1 - Yes\n0 - No\n> ")
     rec = 'NO'
     if mode == "1":
+        start_time = time.time()
         rec = input("\nWould you like to record to a file?\n1 - Yes\nAny Key - No\n> ")
         fn = datetime.datetime.now().__str__().replace(":","_").replace(".","_").replace("-","_") + "_SessionFile.csv"
         if GUI != '1':
