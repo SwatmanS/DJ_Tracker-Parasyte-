@@ -1155,7 +1155,7 @@ if __name__ == '__main__':
         # allow to show encoded strings
         import codecs
         sys.stdout = codecs.getwriter('mbcs')(sys.stdout)
-    print("DJ_Parasyte Version: Pre-Alpha")
+    print("DJ Controller Recorder/Replayer 'Parasyte' Version: Prototyping")
     print("Author: Sam Swatman")
     global start_time
     global current_time
